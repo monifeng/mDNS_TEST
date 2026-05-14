@@ -29,15 +29,60 @@ go build -o mdnsmap ./cmd/mdnsmap
 | `-ports` | 端口范围或列表，例如 1-1024 或 9,445,548,5000 | - | 是 |
 | `-services` | 服务类型列表，默认内置多种 | - | 否 |
 | `-timeout` | mDNS 浏览超时 | 5s | 否 |
+| `-format` | 输出格式，支持 json、services | json | 否 |
 | `-pretty` | 是否格式化输出 JSON | false | 否 |
 | `-dataset` | 是否输出数据集格式 | false | 否 |
 
 ## 使用示例
 
-### 基本使用
+### 基本使用 (JSON 格式)
 
 ```bash
 ./mdnsmap -cidr 192.168.1.0/24 -ports 9,445,548,5000 -pretty
+```
+
+### services 格式输出
+
+```bash
+./mdnsmap -cidr 192.168.1.0/24 -ports 9,445,548,5000 -format services
+```
+
+输出示例：
+
+```
+services:
+9/tcp workstation:
+Name=slw-nas
+IPv4=192.168.1.10
+Hostname=slw-nas.local.
+TTL=10
+
+5000/tcp http:
+Name=slw-nas
+IPv4=192.168.1.10
+Hostname=slw-nas.local.
+TTL=10
+path=/
+
+445/tcp smb:
+Name=slw-nas
+IPv4=192.168.1.10
+Hostname=slw-nas.local.
+TTL=10
+
+5000/tcp qdiscover:
+Name=slw-nas
+IPv4=192.168.1.10
+Hostname=slw-nas.local.
+TTL=10
+accessType=https,accessPort=86,model=TS-X64,displayModel=TS-464C,fwVer=5.2.9,fwBuildNum=20260214
+
+answers:
+PTR:
+_workstation._tcp.local.
+_http._tcp.local.
+_smb._tcp.local.
+_qdiscover._tcp.local.
 ```
 
 ### 数据集验证模式
