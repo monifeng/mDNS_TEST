@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strings"
 	"sync"
 	"time"
 
@@ -42,7 +43,10 @@ func Scan(ctx context.Context, cfg *config.Config, ipnet *net.IPNet, allowedPort
 			if !allowedPorts[entry.Port] {
 				continue
 			}
-			svcType := fmt.Sprintf("%s.%s.local.", entry.Service, entry.Protocol)
+			svcType := entry.Service
+			if !strings.HasSuffix(svcType, ".") {
+				svcType += "."
+			}
 			key := fmt.Sprintf("%s|%s|%s|%d|%s", svcType, entry.Instance, entry.HostName, entry.Port, ipStr)
 			if seen[key] {
 				continue

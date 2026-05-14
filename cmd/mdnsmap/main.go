@@ -17,10 +17,11 @@ func main() {
 	var (
 		cidrFlag     = flag.String("cidr", "", "目标IP网段，例如 192.168.1.0/24")
 		portsFlag    = flag.String("ports", "", "端口范围，例如 1-1024 或 9,445,548,5000")
-		servicesFlag = flag.String("services", "", "服务类型列表，默认内置")
+		servicesFlag = flag.String("services", "", "服务类型列表，逗号分隔")
 		timeoutFlag  = flag.Duration("timeout", 5*time.Second, "mDNS浏览超时")
 		prettyFlag   = flag.Bool("pretty", false, "格式化输出JSON")
 		datasetFlag  = flag.Bool("dataset", false, "输出数据集格式")
+		formatFlag   = flag.String("format", "json", "输出格式: json, services")
 	)
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "mDNS资产测绘工具\n")
@@ -69,13 +70,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	if cfg.DatasetMode {
-		if err := output.PrintDataset(assets, cfg.Pretty); err != nil {
+	switch *formatFlag {
+	case "services":
+		output.PrintServices(assets)
+	case "dataset":
+		if err := output.PrintDataset(assets, *prettyFlag); err != nil {
 			fmt.Fprintf(os.Stderr, "输出错误: %v\n", err)
 			os.Exit(1)
 		}
-	} else {
-		if err := output.PrintJSON(assets, cfg.Pretty); err != nil {
+	default:
+		if err := output.PrintJSON(assets, *prettyFlag); err != nil {
 			fmt.Fprintf(os.Stderr, "输出错误: %v\n", err)
 			os.Exit(1)
 		}
